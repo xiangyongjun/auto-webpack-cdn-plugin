@@ -1,0 +1,19 @@
+{
+  "name": "auto-webpack-cdn-plugin",
+  "version": "1.0.0",
+  "description": "一个可以将node_module依赖替换成cdn资源的webpack插件,而且支持cdn失效时自动切换到本地备份的依赖.",
+  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xiangyongjun/auto-webpack-cdn-plugin"
+  },
+  "author": {
+    "name": "xiangyongjun",
+    "email": "827514947@qq.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/xiangyongjun/auto-webpack-cdn-plugin",
+  "bugs": {
+    "url": "https://github.com/xiangyongjun/auto-webpack-cdn-plugin/issues"
+  }
+}
