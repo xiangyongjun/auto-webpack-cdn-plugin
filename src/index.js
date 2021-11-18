@@ -41,10 +41,12 @@ class AutoWebpackCdnPlugin {
         if (name === this.options.template) {
           let contents = compilation.assets[name].source();
           let temp = '';
-          let initScript = `<script type=\"text/javascript\" cdn>var totalScript=#totalScript#;function loadCSS(e){let new_s=document.createElement('link');new_s.rel='stylesheet';new_s.href=e.getAttribute('backup');document.head.insertBefore(new_s,e);e.remove()}function loadScript(e){let new_s=document.createElement('script');new_s.src=e.getAttribute('backup');e.hasAttribute('crossorigin')&&new_s.setAttribute(e.getAttribute('crossorigin'));document.head.insertBefore(new_s,e);new_s.onload=loadSuccess.call(e);e.remove()}let loadSuccess=(function(){let loadedScript=0;return function(){this.getAttribute('onload')&&this.removeAttribute('onload');this.getAttribute('onerror')&&this.removeAttribute('onerror');this.getAttribute('backup')&&this.removeAttribute('backup');if(this.tagName!=='SCRIPT'){return}loadedScript++;if(loadedScript===totalScript){document.open();document.write('#bodyContent#');document.close();loadedScript=null;let scripts=[...document.getElementsByTagName('script')];scripts.forEach(item=>{if(item.hasAttribute('cdn')){item.remove()}})}}})();</script>`;
+          let tempf = '';
+          let initScript = `<script type=\"text/javascript\" cdn>var totalScript=#totalScript#;var finallyScript=#finallyScript#;function loadCSS(e){let new_s=document.createElement('link');new_s.rel='stylesheet';new_s.href=e.getAttribute('backup');document.head.insertBefore(new_s,e);e.remove()}function loadScript(e){let new_s=document.createElement('script');new_s.src=e.getAttribute('backup');e.hasAttribute('crossorigin')&&new_s.setAttribute(e.getAttribute('crossorigin'));document.head.insertBefore(new_s,e);new_s.onload=loadSuccess.call(e);e.remove()}let loadSuccess=(function(){let loadedScript=0;let finalScript=0;return function(){this.getAttribute('onload')&&this.removeAttribute('onload');this.getAttribute('onerror')&&this.removeAttribute('onerror');this.getAttribute('backup')&&this.removeAttribute('backup');if(this.tagName!=='SCRIPT')return;!this.hasAttribute('final')&&loadedScript++;if(this.hasAttribute('final')){finalScript++;this.removeAttribute('final')}if(loadedScript==totalScript){document.open();document.write('#bodyContent#');document.close()}if(loadedScript===totalScript&&finalScript===finallyScript){loadedScript=null;finalScript=null;let scripts=[...document.getElementsByTagName('script')];scripts.forEach(item=>{if(item.hasAttribute('cdn'))item.remove()})}}})();</script>`;
           let bodyContent = contents.substring(contents.indexOf('<body>') + 6, contents.indexOf('</body>'));
-          let totalScript = this.options.modules.filter(item => getType(item.path) === 'js').length;
-          initScript = initScript.replace('#bodyContent#', bodyContent).replace('#totalScript#', totalScript);
+          let totalScript = this.options.modules.filter(item => getType(item.path) === 'js' && !item.final).length;
+          let finallyScript = this.options.modules.filter(item => getType(item.path) === 'js' && item.final).length;
+          initScript = initScript.replace('#bodyContent#', bodyContent).replace('#totalScript#', totalScript).replace('#finallyScript#', finallyScript);
           this.options.modules.sort((a, b) => {
             if (getType(a.path) === 'css' && getType(b.path) === 'js') return -1;
           });
@@ -53,12 +55,14 @@ class AutoWebpackCdnPlugin {
             let url = this.options.cdnUrl;
             url = url.replace(':name', item.from).replace(':version', getVersionInNodeModules(item.from));
             if (item.path.substring(0, 3) !== 'http') item.path = `${url}/${item.path}`;
-            if (getType(filename) === 'js') temp += `<script type="text/javascript" ${this.options.crossOrigin ? `crossorigin="${this.options.crossOrigin}"` : ''}`
+            if (getType(filename) === 'js' && !item.final) temp += `<script type="text/javascript" ${this.options.crossOrigin ? `crossorigin="${this.options.crossOrigin}"` : ''}`
               + ` ${this.options.backup ? `backup="${filename}"` : ''} onload="loadSuccess.call(this)" onerror="loadScript(this)" src="${item.path}"></script>`;
             if (getType(filename) === 'css') temp += `<link rel="stylesheet" ${this.options.backup ? `backup="${filename}"` : ''} onload="loadSuccess.call(this)" onerror="loadCSS(this)" href="${item.path}"></link>`;
+            if (getType(filename) === 'js' && item.final) tempf += `<script type="text/javascript" ${this.options.crossOrigin ? `crossorigin="${this.options.crossOrigin}"` : ''}`
+              + ` ${this.options.backup ? `backup="${filename}"` : ''} onload="loadSuccess.call(this)" onerror="loadScript(this)" src="${item.path}" final></script>`;
           });
           let withoutComments = contents.replace('</head>', initScript + temp + '</head>');
-          withoutComments = withoutComments.replace(bodyContent, '');
+          withoutComments = withoutComments.replace(bodyContent, '').replace('</body>', tempf + '</body>');
           compilation.assets[name] = {
             source: () => withoutComments,
             size: () => withoutComments.length
