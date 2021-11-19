@@ -4,6 +4,8 @@
 
 > 一个可以将 `node_module` 依赖替换成 `cdn` 资源的 `webpack` 插件，而且支持 `cdn` 失效时自动切换到本地备份的依赖。
 
+中文 | [English](https://github.com/xiangyongjun/auto-webpack-cdn-plugin/blob/main/README.EN.md)
+
 ## 简介
 `auto-webpack-cdn-plugin` 只需要简单配置，即可以将项目中使用到的依赖资源替换成 cdn 资源，并且支持 cdn 依赖备份，打包的时候自动下载 cdn 上对应版本的资源进行本地备份，当 cdn 失效时会自动切换成本地的依赖，解决小水管服务器用户的痛点。
 
