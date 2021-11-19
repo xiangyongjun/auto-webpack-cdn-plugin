@@ -45,7 +45,7 @@ module.exports = {
           { from: 'element-ui', path: 'lib/theme-chalk/index.css' },
           { from: 'normalize.css', path: 'normalize.css' },
         ],
-        // from（模块名称），to（模块导出的函数名称，css可略），path（资源路径，可填入完整 url），final（首屏渲染后加载，css可略）
+        // from（模块名称），to（模块导出的全局对象名称，css可略），path（资源路径，可填入完整 url），final（首屏渲染后加载，css可略）
     })
   ]
   // ...
@@ -62,11 +62,11 @@ import Vuex from 'vuex';
 if (!window.VueRouter) Vue.use(VueRouter);
 if (!window.Vuex) Vue.use(VueRouter);
 
-// 当需要被替换的依赖被 Vue.use() 时，需要手动加上判断语句 if(!window.模块导出的函数名称) ，否则运行将会报错
+// 当需要被替换的依赖被 Vue.use() 时，需要手动加上判断语句 if(!window.模块导出的全局对象名称) ，否则运行将会报错
 ```
 
 ## 实现原理
-1. 提取 `html` 模板的 `body` 代码，注入。
+1. 提取 `html` 模板的 `body` 代码，注入 `<script cdn></script>` 代码。
 2. 注入 `script` 、 `link` 标签（绑定了 `onload` 、 `onerror` 事件）到 `html` 模板。
 3. 当 `webpack` 打包时下载相应的 `cdn` 资源到本地的 `backup` 目录。
 4. 当标签的 `onerror` 事件被执行时，`src` 、 `href` 将会替换成本地的资源。
