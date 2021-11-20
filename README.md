@@ -62,7 +62,7 @@ import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 
 if (!window.VueRouter) Vue.use(VueRouter);
-if (!window.Vuex) Vue.use(VueRouter);
+if (!window.Vuex) Vue.use(Vuex);
 
 // 当需要被替换的依赖被 Vue.use() 时，需要手动加上判断语句 if(!window.模块导出的全局对象名称) ，否则运行将会报错
 ```
@@ -87,7 +87,7 @@ if (!window.Vuex) Vue.use(VueRouter);
       ...
       <!-- 以下是注入的 final: true 的代码 -->
       <script root type="text/javascript" crossorigin="anonymous" onerror="this.remove();" src="https://unpkg.zhimg.com/moment@2.29.1/min/moment.min.js"></script>
-      <script backup>window.moment || document.write(unescape('%3Cscript%20type%3D%22text/javascript%22%20crossorigin%3D%22anonymous%20src%3D%22./backup/vue@2.6.10/dist/vue.min.js%22%3E%3C/script%3E'));</script>
+      <script backup>window.moment || document.write(unescape('%3Cscript%20type%3D%22text/javascript%22%20crossorigin%3D%22anonymous%20src%3D%22./backup/moment@2.29.1/min/moment.min.js%22%3E%3C/script%3E'));</script>
   </body>
 </html>
 ```
