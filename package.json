@@ -1,6 +1,6 @@
 {
   "name": "auto-webpack-cdn-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "一个可以将 node_module 依赖替换成 cdn 资源的 webpack 插件,而且支持 cdn 失效时自动切换到本地备份的依赖.",
   "main": "./src/index.js",
   "repository": {
